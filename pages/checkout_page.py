@@ -1,3 +1,4 @@
+import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,29 +15,26 @@ class CheckoutPage(BasePage):
     ERROR_BANNER = (By.CSS_SELECTOR, "h3[data-test='error']")
 
     def start_checkout(self):
-        btn = self.wait.until(EC.element_to_be_clickable(self.CHECKOUT_BTN))
-        btn.click()
+        self.wait.until(EC.element_to_be_clickable(self.CHECKOUT_BTN)).click()
+        time.sleep(1)  # Force sync for CI runners
 
     def fill_customer_info(self, first, last, postal):
-        if first:
-            field = self.wait.until(EC.element_to_be_clickable(self.FIRST_NAME))
-            field.clear()
-            field.send_keys(first)
-        if last:
-            field = self.wait.until(EC.element_to_be_clickable(self.LAST_NAME))
-            field.clear()
-            field.send_keys(last)
-        if postal:
-            field = self.wait.until(EC.element_to_be_clickable(self.POSTAL_CODE))
-            field.clear()
-            field.send_keys(postal)
+        self.wait.until(EC.visibility_of_element_located(self.FIRST_NAME))
         
-        btn = self.wait.until(EC.element_to_be_clickable(self.CONTINUE_BTN))
-        btn.click()
+        if first:
+            self.driver.find_element(*self.FIRST_NAME).send_keys(first)
+        if last:
+            self.driver.find_element(*self.LAST_NAME).send_keys(last)
+        if postal:
+            self.driver.find_element(*self.POSTAL_CODE).send_keys(postal)
+        
+        time.sleep(0.5)  # Let React register the typed text
+        self.wait.until(EC.element_to_be_clickable(self.CONTINUE_BTN)).click()
+        time.sleep(1)  # Wait for next page to load
 
     def finish_checkout(self):
-        btn = self.wait.until(EC.element_to_be_clickable(self.FINISH_BTN))
-        btn.click()
+        self.wait.until(EC.element_to_be_clickable(self.FINISH_BTN)).click()
+        time.sleep(1)  # Wait for confirmation page
 
     def get_confirmation_text(self):
         return self.wait.until(EC.visibility_of_element_located(self.COMPLETE_HEADER)).text

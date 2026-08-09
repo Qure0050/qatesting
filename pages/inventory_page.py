@@ -1,3 +1,4 @@
+import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,13 +14,12 @@ class InventoryPage(BasePage):
         return self.wait.until(EC.visibility_of_element_located(self.TITLE)).text
 
     def add_backpack_to_cart(self):
-        btn = self.wait.until(EC.element_to_be_clickable(self.ADD_BACKPACK))
-        btn.click()
+        self.wait.until(EC.element_to_be_clickable(self.ADD_BACKPACK)).click()
+        time.sleep(0.5)
 
     def get_cart_badge_count(self):
         return self.wait.until(EC.visibility_of_element_located(self.CART_BADGE)).text
 
     def open_cart(self):
-        link = self.wait.until(EC.element_to_be_clickable(self.CART_LINK))
-        link.click()
-        self.wait.until(EC.url_contains("cart.html"))
+        self.wait.until(EC.element_to_be_clickable(self.CART_LINK)).click()
+        time.sleep(1)  # Wait for cart page to load
