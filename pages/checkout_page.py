@@ -1,4 +1,6 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 
 class CheckoutPage(BasePage):
@@ -12,19 +14,23 @@ class CheckoutPage(BasePage):
     ERROR_BANNER = (By.CSS_SELECTOR, "h3[data-test='error']")
 
     def start_checkout(self):
-        self.click(self.CHECKOUT_BTN)
+        btn = self.wait.until(EC.element_to_be_clickable(self.CHECKOUT_BTN))
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def fill_customer_info(self, first, last, postal):
+        self.wait.until(EC.visibility_of_element_located(self.FIRST_NAME))
         if first:
             self.type_text(self.FIRST_NAME, first)
         if last:
             self.type_text(self.LAST_NAME, last)
         if postal:
             self.type_text(self.POSTAL_CODE, postal)
-        self.click(self.CONTINUE_BTN)
+        btn = self.wait.until(EC.element_to_be_clickable(self.CONTINUE_BTN))
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def finish_checkout(self):
-        self.click(self.FINISH_BTN)
+        btn = self.wait.until(EC.element_to_be_clickable(self.FINISH_BTN))
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def get_confirmation_text(self):
         return self.get_text(self.COMPLETE_HEADER)

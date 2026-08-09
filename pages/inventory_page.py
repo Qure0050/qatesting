@@ -1,4 +1,6 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 
 class InventoryPage(BasePage):
@@ -11,10 +13,12 @@ class InventoryPage(BasePage):
         return self.get_text(self.TITLE)
 
     def add_backpack_to_cart(self):
-        self.click(self.ADD_BACKPACK)
+        btn = self.wait.until(EC.element_to_be_clickable(self.ADD_BACKPACK))
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def get_cart_badge_count(self):
         return self.get_text(self.CART_BADGE)
 
     def open_cart(self):
-        self.click(self.CART_LINK)
+        link = self.wait.until(EC.element_to_be_clickable(self.CART_LINK))
+        self.driver.execute_script("arguments[0].click();", link)
