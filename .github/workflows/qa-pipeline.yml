@@ -26,7 +26,7 @@ jobs:
 
     - name: Execute Automated Regression Suite
       run: |
-        pytest tests/ --junitxml=reports/test-results.xml
+        python -m pytest tests/ --junitxml=reports/test-results.xml 
 
     - name: Upload Test Report Artifacts
       if: always()
