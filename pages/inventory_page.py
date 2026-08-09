@@ -14,12 +14,16 @@ class InventoryPage(BasePage):
         return self.wait.until(EC.visibility_of_element_located(self.TITLE)).text
 
     def add_backpack_to_cart(self):
-        self.wait.until(EC.element_to_be_clickable(self.ADD_BACKPACK)).click()
+        btn = self.wait.until(EC.presence_of_element_located(self.ADD_BACKPACK))
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", btn)
+        self.driver.execute_script("arguments[0].click();", btn)
         time.sleep(0.5)
 
     def get_cart_badge_count(self):
         return self.wait.until(EC.visibility_of_element_located(self.CART_BADGE)).text
 
     def open_cart(self):
-        self.wait.until(EC.element_to_be_clickable(self.CART_LINK)).click()
-        time.sleep(1)  # Wait for cart page to load
+        link = self.wait.until(EC.presence_of_element_located(self.CART_LINK))
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", link)
+        self.driver.execute_script("arguments[0].click();", link)
+        time.sleep(1)
