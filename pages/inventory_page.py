@@ -10,15 +10,16 @@ class InventoryPage(BasePage):
     CART_LINK = (By.CLASS_NAME, "shopping_cart_link")
 
     def get_title_text(self):
-        return self.get_text(self.TITLE)
+        return self.wait.until(EC.visibility_of_element_located(self.TITLE)).text
 
     def add_backpack_to_cart(self):
         btn = self.wait.until(EC.element_to_be_clickable(self.ADD_BACKPACK))
-        self.driver.execute_script("arguments[0].click();", btn)
+        btn.click()
 
     def get_cart_badge_count(self):
-        return self.get_text(self.CART_BADGE)
+        return self.wait.until(EC.visibility_of_element_located(self.CART_BADGE)).text
 
     def open_cart(self):
         link = self.wait.until(EC.element_to_be_clickable(self.CART_LINK))
-        self.driver.execute_script("arguments[0].click();", link)
+        link.click()
+        self.wait.until(EC.url_contains("cart.html"))
