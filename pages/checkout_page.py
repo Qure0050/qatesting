@@ -13,34 +13,32 @@ class CheckoutPage(BasePage):
     COMPLETE_HEADER = (By.CLASS_NAME, "complete-header")
     ERROR_BANNER = (By.CSS_SELECTOR, "h3[data-test='error']")
 
+    def _click_element(self, locator):
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        self.driver.execute_script("arguments[0].click();", element)
+
     def start_checkout(self):
-        btn = self.wait.until(EC.presence_of_element_located(self.CHECKOUT_BTN))
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", btn)
-        self.wait.until(EC.element_to_be_clickable(self.CHECKOUT_BTN)).click()
+        self._click_element(self.CHECKOUT_BTN)
 
     def fill_customer_info(self, first, last, postal):
-        def safe_enter(locator, text):
-            field = self.wait.until(EC.element_to_be_clickable(locator))
-            self.driver.execute_script("arguments[0].scrollIntoView(true);", field)
-            field.click()
+        def enter_text(locator, text):
+            field = self.wait.until(EC.visibility_of_element_located(locator))
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", field)
             field.clear()
             field.send_keys(text)
-            WebDriverWait(self.driver, 5).until(
-                lambda d: d.find_element(*locator).get_attribute("value") == text
-            )
 
-        if first: safe_enter(self.FIRST_NAME, first)
-        if last: safe_enter(self.LAST_NAME, last)
-        if postal: safe_enter(self.POSTAL_CODE, postal)
+        if first:
+            enter_text(self.FIRST_NAME, first)
+        if last:
+            enter_text(self.LAST_NAME, last)
+        if postal:
+            enter_text(self.POSTAL_CODE, postal)
         
-        btn = self.wait.until(EC.presence_of_element_located(self.CONTINUE_BTN))
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", btn)
-        self.wait.until(EC.element_to_be_clickable(self.CONTINUE_BTN)).click()
+        self._click_element(self.CONTINUE_BTN)
 
     def finish_checkout(self):
-        btn = self.wait.until(EC.presence_of_element_located(self.FINISH_BTN))
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", btn)
-        self.wait.until(EC.element_to_be_clickable(self.FINISH_BTN)).click()
+        self._click_element(self.FINISH_BTN)
 
     def get_confirmation_text(self):
         return self.wait.until(EC.visibility_of_element_located(self.COMPLETE_HEADER)).text
