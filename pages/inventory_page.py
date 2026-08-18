@@ -1,5 +1,4 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 
 class InventoryPage(BasePage):
@@ -9,16 +8,13 @@ class InventoryPage(BasePage):
     CART_LINK = (By.CLASS_NAME, "shopping_cart_link")
 
     def get_title_text(self):
-        return self.wait.until(EC.visibility_of_element_located(self.TITLE)).text
+        return self.get_text(self.TITLE)
 
     def add_backpack_to_cart(self):
-        btn = self.wait.until(EC.element_to_be_clickable(self.ADD_BACKPACK))
-        self.driver.execute_script("arguments[0].click();", btn)
+        self.click(self.ADD_BACKPACK)
 
     def get_cart_badge_count(self):
-        return self.wait.until(EC.visibility_of_element_located(self.CART_BADGE)).text
+        return self.get_text(self.CART_BADGE)
 
     def open_cart(self):
-        link = self.wait.until(EC.presence_of_element_located(self.CART_LINK))
-        self.driver.execute_script("arguments[0].click();", link)
-        self.wait.until(EC.url_contains("cart"))
+        self.click(self.CART_LINK)
