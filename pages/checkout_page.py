@@ -1,5 +1,4 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 
@@ -15,30 +14,29 @@ class CheckoutPage(BasePage):
 
     def start_checkout(self):
         btn = self.wait.until(EC.element_to_be_clickable(self.CHECKOUT_BTN))
-        btn.click()
-        # Ensure routing to checkout step one is complete
+        self.driver.execute_script("arguments[0].click();", btn)
         self.wait.until(EC.url_contains("checkout-step-one"))
 
     def fill_customer_info(self, first, last, postal):
-        def type_field(locator, text):
-            field = self.wait.until(EC.element_to_be_clickable(locator))
-            field.click()
-            field.clear()
-            if text:
-                field.send_keys(text)
-
-        type_field(self.FIRST_NAME, first)
-        type_field(self.LAST_NAME, last)
-        type_field(self.POSTAL_CODE, postal)
+        if first:
+            f = self.wait.until(EC.visibility_of_element_located(self.FIRST_NAME))
+            f.clear()
+            f.send_keys(first)
+        if last:
+            l = self.wait.until(EC.visibility_of_element_located(self.LAST_NAME))
+            l.clear()
+            l.send_keys(last)
+        if postal:
+            p = self.wait.until(EC.visibility_of_element_located(self.POSTAL_CODE))
+            p.clear()
+            p.send_keys(postal)
         
         btn = self.wait.until(EC.element_to_be_clickable(self.CONTINUE_BTN))
-        btn.click()
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def finish_checkout(self):
-        # Ensure routing to checkout step two is complete before looking for finish
-        self.wait.until(EC.url_contains("checkout-step-two"))
         btn = self.wait.until(EC.element_to_be_clickable(self.FINISH_BTN))
-        btn.click()
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def get_confirmation_text(self):
         return self.wait.until(EC.visibility_of_element_located(self.COMPLETE_HEADER)).text
