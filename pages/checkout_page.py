@@ -13,32 +13,27 @@ class CheckoutPage(BasePage):
     COMPLETE_HEADER = (By.CLASS_NAME, "complete-header")
     ERROR_BANNER = (By.CSS_SELECTOR, "h3[data-test='error']")
 
-    def _click_element(self, locator):
-        element = self.wait.until(EC.element_to_be_clickable(locator))
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
-        self.driver.execute_script("arguments[0].click();", element)
-
     def start_checkout(self):
-        self._click_element(self.CHECKOUT_BTN)
+        btn = self.wait.until(EC.element_to_be_clickable(self.CHECKOUT_BTN))
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def fill_customer_info(self, first, last, postal):
-        def enter_text(locator, text):
+        def fill_input(locator, text):
             field = self.wait.until(EC.visibility_of_element_located(locator))
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", field)
             field.clear()
-            field.send_keys(text)
+            if text:
+                field.send_keys(text)
 
-        if first:
-            enter_text(self.FIRST_NAME, first)
-        if last:
-            enter_text(self.LAST_NAME, last)
-        if postal:
-            enter_text(self.POSTAL_CODE, postal)
+        fill_input(self.FIRST_NAME, first)
+        fill_input(self.LAST_NAME, last)
+        fill_input(self.POSTAL_CODE, postal)
         
-        self._click_element(self.CONTINUE_BTN)
+        btn = self.wait.until(EC.element_to_be_clickable(self.CONTINUE_BTN))
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def finish_checkout(self):
-        self._click_element(self.FINISH_BTN)
+        btn = self.wait.until(EC.element_to_be_clickable(self.FINISH_BTN))
+        self.driver.execute_script("arguments[0].click();", btn)
 
     def get_confirmation_text(self):
         return self.wait.until(EC.visibility_of_element_located(self.COMPLETE_HEADER)).text
