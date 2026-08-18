@@ -12,23 +12,37 @@ class CheckoutPage(BasePage):
     COMPLETE_HEADER = (By.CLASS_NAME, "complete-header")
     ERROR_BANNER = (By.CSS_SELECTOR, "h3[data-test='error']")
 
+    def _js_click(self, locator):
+        element = self.wait.until(EC.presence_of_element_located(locator))
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        self.driver.execute_script("arguments[0].click();", element)
+
     def start_checkout(self):
-        self.click(self.CHECKOUT_BTN)
-        self.wait.until(EC.url_contains("checkout-step-one"))
+        self._js_click(self.CHECKOUT_BTN)
+        self.wait.until(EC.visibility_of_element_located(self.FIRST_NAME))
 
     def fill_customer_info(self, first, last, postal):
-        self.type_text(self.FIRST_NAME, first)
-        self.type_text(self.LAST_NAME, last)
-        self.type_text(self.POSTAL_CODE, postal)
-        self.click(self.CONTINUE_BTN)
+        if first:
+            field = self.wait.until(EC.visibility_of_element_located(self.FIRST_NAME))
+            field.clear()
+            field.send_keys(first)
+        if last:
+            field = self.wait.until(EC.visibility_of_element_located(self.LAST_NAME))
+            field.clear()
+            field.send_keys(last)
+        if postal:
+            field = self.wait.until(EC.visibility_of_element_located(self.POSTAL_CODE))
+            field.clear()
+            field.send_keys(postal)
+            
+        self._js_click(self.CONTINUE_BTN)
 
     def finish_checkout(self):
-        self.wait.until(EC.url_contains("checkout-step-two"))
-        self.click(self.FINISH_BTN)
-        self.wait.until(EC.url_contains("checkout-complete"))
+        self._js_click(self.FINISH_BTN)
+        self.wait.until(EC.visibility_of_element_located(self.COMPLETE_HEADER))
 
     def get_confirmation_text(self):
-        return self.get_text(self.COMPLETE_HEADER)
+        return self.wait.until(EC.visibility_of_element_located(self.COMPLETE_HEADER)).text
 
     def get_error_text(self):
-        return self.get_text(self.ERROR_BANNER)
+        return self.wait.until(EC.visibility_of_element_located(self.ERROR_BANNER)).text
