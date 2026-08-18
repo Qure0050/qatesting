@@ -15,25 +15,30 @@ class CheckoutPage(BasePage):
 
     def start_checkout(self):
         btn = self.wait.until(EC.element_to_be_clickable(self.CHECKOUT_BTN))
-        self.driver.execute_script("arguments[0].click();", btn)
+        btn.click()
+        # Ensure routing to checkout step one is complete
+        self.wait.until(EC.url_contains("checkout-step-one"))
 
     def fill_customer_info(self, first, last, postal):
-        def fill_input(locator, text):
-            field = self.wait.until(EC.visibility_of_element_located(locator))
+        def type_field(locator, text):
+            field = self.wait.until(EC.element_to_be_clickable(locator))
+            field.click()
             field.clear()
             if text:
                 field.send_keys(text)
 
-        fill_input(self.FIRST_NAME, first)
-        fill_input(self.LAST_NAME, last)
-        fill_input(self.POSTAL_CODE, postal)
+        type_field(self.FIRST_NAME, first)
+        type_field(self.LAST_NAME, last)
+        type_field(self.POSTAL_CODE, postal)
         
         btn = self.wait.until(EC.element_to_be_clickable(self.CONTINUE_BTN))
-        self.driver.execute_script("arguments[0].click();", btn)
+        btn.click()
 
     def finish_checkout(self):
+        # Ensure routing to checkout step two is complete before looking for finish
+        self.wait.until(EC.url_contains("checkout-step-two"))
         btn = self.wait.until(EC.element_to_be_clickable(self.FINISH_BTN))
-        self.driver.execute_script("arguments[0].click();", btn)
+        btn.click()
 
     def get_confirmation_text(self):
         return self.wait.until(EC.visibility_of_element_located(self.COMPLETE_HEADER)).text
